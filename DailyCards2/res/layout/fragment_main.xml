@@ -13,7 +13,6 @@
         />
         
    <com.abg.dailycards2.DayilyCardsScratchView
-        xmlns:wsv="http://schemas.android.com/apk/res-auto"
         android:id="@+id/scratch_view"
         android:layout_width="300dp"
         android:layout_height="300dp"
