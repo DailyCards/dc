@@ -1,0 +1,31 @@
+<h1>Listing carriers</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th><%=t(:name)%></th>
+      <th><%=t(:phoneno)%></th>
+      <th><%=t(:description)%></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @carriers.each do |carrier| %>
+      <tr>
+        <td><%= link_to 'Show', carrier %></td>
+        <td><%= link_to 'Edit', edit_carrier_path(carrier) %></td>
+        <td><%= link_to 'Destroy', carrier, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+		<td><%= carrier.name %></td>
+		<td><%= carrier.phoneno %></td>
+		<td><%= carrier.description %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Carrier', new_carrier_path %>
