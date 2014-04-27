@@ -69,10 +69,9 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 		 overlayPaint.setStrokeJoin(Paint.Join.ROUND);
 	 }
 	 
-	 @Override
-	 public void onDraw(Canvas canvas) {
+	 public void draw(Canvas canvas) {
 		 canvas.drawColor(overlayColor);
-		 
+		 Log.d("onDrawwwwwwwwwwww", "DRAWWWWWWWWWWWWWWW");
 		 //izchertavame putistata
 		 for (Path path: pathList) {
 			 canvas.drawPath(path, overlayPaint);
@@ -180,8 +179,7 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 					 canvas = surfaceHolder.lockCanvas(null);
 					 synchronized(surfaceHolder) {
 						 if (canvas != null) {
-							 //view.onDraw(canvas);
-							 view.postInvalidate();
+							 view.draw(canvas);
 						 }
 						 
 					 }
