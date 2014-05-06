@@ -3,23 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView 
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:text="Test"
-        />
-        
+   <RelativeLayout 
+        android:id="@+id/scratch_text_view" 
+        android:layout_centerInParent="true"
+	    android:layout_width="300dp"
+	    android:layout_height="150dp">
+	    <TextView
+	        android:id="@+id/scratch_text" 
+	        android:layout_centerInParent="true"
+	        android:layout_width="300dp"
+	    	android:layout_height="150dp"
+	        android:gravity="center"
+	        android:text="Test"
+	    />
+   </RelativeLayout>     
    <com.abg.dailycards2.DayilyCardsScratchView
         android:id="@+id/scratch_view"
         android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_centerInParent="true"
-       
-        />
-
-    
-
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"   
+   />
 </RelativeLayout>
