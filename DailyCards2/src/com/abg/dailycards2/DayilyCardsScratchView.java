@@ -43,15 +43,6 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 private float startX = 0f;
 	 private float startY = 0f;
 	 
-	 
-	 //private int width;
-	 //private int height;
-	 //private int sizeOfQuadsX;
-	// private int sizeOfQuadsY;
-	 //private int quadsMustBeScracthed;
-	 
-	 //private HashMap<String, Boolean> coords = new HashMap<String, Boolean>();
-	 
 	 //ukazane dali pochva novo scratchvane za da se suzdade v List nov Path
 	 private boolean scratching = false;
 	 
@@ -95,54 +86,22 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 		 overlayPaint2.setStrokeWidth(scratchWidth);
 		 overlayPaint2.setStrokeCap(Paint.Cap.ROUND);
 		 overlayPaint2.setStrokeJoin(Paint.Join.ROUND);
-		 /*
-		 width = getWidth();
-		 height = getHeight();
-		 sizeOfQuadsX  = (int)(width/(scratchWidth + .5));
-		 sizeOfQuadsY  = (int)(height/(scratchWidth + .5));
-		 quadsMustBeScracthed = (int)(sizeOfQuadsX*sizeOfQuadsY - 2*sizeOfQuadsX -
-				  2*sizeOfQuadsY- 4*scratchWidth);	 
-				 
-		 Log.d("Width and height", width + " " + height);
-		 Log.d("sizeOfQuadsX", sizeOfQuadsX + " ");
-		 Log.d("sizeOfQuadsY", sizeOfQuadsY + " ");
-		 Log.d("quadsMustBeScracthed", quadsMustBeScracthed + " ");
-		 */
+		
 	 }
-	 /*
-	 public void drawC(Canvas canvas, DayilyCardsScratchView view) {
-		 bitmap = Bitmap.createBitmap(canvas.getWidth(), 
-					canvas.getHeight(), Bitmap.Config.RGB_565);
-		 Canvas newCanvas = new Canvas(bitmap);
-		 view.draw(newCanvas);
-		 canvas.drawBitmap(bitmap, 0, 0, null);
-		// for (Path path: pathList) {
-		//	 canvas.drawPath(path, overlayPaint);
-		// }
-	 }
-	 */
+	
 	 @Override
 	 public void draw(Canvas canvas) {
-		 //buildDrawingCache(true);
-		 //Log.d("bitmap size", bitmap.getWidth() + " ");
+		
 		 bitmap = Bitmap.createBitmap(canvas.getWidth(), 
 					canvas.getHeight(), Bitmap.Config.RGB_565);
 		 Canvas newCanvas = new Canvas(bitmap);
 		 canvas.drawColor(overlayColor);
-		 //buildDrawingCache(true);
-		 //bitmap = getBitmap();
-		 //if (bitmap != null) {
-		//	 Log.d("bitmap != null", "bitmap != null");
-		 //}
-		// Log.d("onDrawwwwwwwwwwww", "DRAWWWWWWWWWWWWWWW");
-		 //izchertavame putistata
+		
 		 for (Path path: pathList) {
 			 canvas.drawPath(path, overlayPaint);
 			 newCanvas.drawPath(path, overlayPaint2);
 		 }
 		
-		// setDrawingCacheEnabled(false);
-		//destroyDrawingCache();
 	 }
 	 
 	 @Override
@@ -166,30 +125,19 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 			 			//if (toStartScratch(startX, event.getX(), startY, event.getY())) {
 			 				scratching = true;
 			 				path.lineTo(event.getX(), event.getY());
-			 				//theXYQuad(event.getX(), event.getY());
+			 				
 			 			//}
-			 			//theXYQuad(event.getX(), event.getY());
-			 			//Log.d("movvvvvveeeeee", event.getX() + " "+ event.getY());
+			 			
 			 		}
 			 	break;
 			 	case MotionEvent.ACTION_UP:
 			 		scratching = false;
-			 		 //bitmap = getBitmap();
-					 //if (bitmap != null) {
-						 if (finishScratch()) {
-							 //Log.d("Finish Scrapch", "Finish Scratch");
-							 workingThread.setRunning(false);
-						 }
-					 //}
-			 		/*
-			 		 if (finishScratch()) {
-						 Log.d("Finish Scrapch", "Finish Scratch");
+			 	
+					 if (finishScratch()) {
+						 //Log.d("Finish Scrapch", "Finish Scratch");
 						 workingThread.setRunning(false);
-					 } else {
-						 Log.d("Not finished", "Not finished");
 					 }
-					 */
-			 		//getBitmap().setPixel((int)event.getX(), (int)event.getY(), Color.BLACK);
+					
 			 	break;
 			 }
 			 return true;
@@ -234,64 +182,44 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 		 else
 			 return false;
 	 }
-	 /*
-	 private void theXYQuad (float x, float y) {
-		 Log.d("calling theXYQuad", "calling theXYQuad");
-		 //if (x > scratchWidth && x < width - scratchWidth &&
-			//	 y > scratchWidth && y < height - scratchWidth) {
-			
-			 final int XQuad = (int)x/scratchWidth;
-			 final int YQuad = (int)y/scratchWidth;
-			 Log.d("number of quad", XQuad + " " + YQuad);
-			 if (!coords.containsKey(XQuad+"_"+YQuad)) {
-				 coords.put(XQuad+"_"+YQuad, new Boolean(true));
-				 Log.d("putting", "putting");
-			 } 
-			 
-		// }
-	 }
-	 */
+	 
 	 
 	 private boolean finishScratch () {
 		 
 		 bitmap = getBitmap();
-		 Log.d("on", "DRAWWWWWWWWWWWWWWW");
 		 if (bitmap != null) {
 			 final int width = bitmap.getWidth();
 		     final int height = bitmap.getHeight();
+		     
 		     final int scale = (int)(scratchWidth/2 + .5);
 		     
 		     final int xStep = width/scale;
 		     final int yStep = height/scale;
 		     
-		     final int xInit = xStep/2;
-		     final int yInit = yStep/2;
+		     final int xInit = scale/2;
+		     final int yInit = scale/2;
 		     
-		     final int xEnd = width - xStep/2;
-		     final int yEnd = height - yStep/2;
+		     final int xEnd = width - scale/2;
+		     final int yEnd = height - scale/2;
 		     
 		     int totalTransparent = 0;
 		     
-		     for(int x = xInit; x <= xEnd; x += xStep) {
-		            for(int y = yInit; y <= yEnd; y += yStep) {
+		     for(int x = xInit; x <= xEnd; x += scale) {
+		            for(int y = yInit; y <= yEnd; y += scale) {
 		                if (bitmap.getPixel(x, y) == Color.WHITE) {
-		            	Log.d("Color", Integer.toString(bitmap.getPixel(x, y)));
 		                    totalTransparent++;
 		                }
 		            }
 		        }
 		     	
 		     	Log.i("number transperant", Integer.toString(totalTransparent));
-		     	Log.i("all quads", Integer.toString(scale*scale));
-		     	//return false;
-		        return ((float)totalTransparent)/(scale * scale) > 0.8;
+		     	Log.i("all quads", Integer.toString(xStep * yStep- 2*xStep - 2*yStep + 4));
+		     	Log.i("Procent", Float.toString(((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4 )));
+		        return ((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4) > 0.9f;
 		       //Log.d("transperant",Integer.toString(totalTransparent));
 		 }
 		 return false;
-		 /*
-		 Log.d("HashpMap size", Integer.toString(coords.size()));
-		 return ((float)coords.size()/(float)quadsMustBeScracthed) > .85;
-		 */
+	
 	 }
 	 
 	 private Bitmap getBitmap() {
@@ -333,13 +261,7 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 					 canvas = surfaceHolder.lockCanvas(null);
 					 synchronized(surfaceHolder) {
 						 if (canvas != null) {
-							 /*
-							 if (bitmap == null)
-								bitmap = Bitmap.createBitmap(canvas.getWidth(), 
-										canvas.getHeight(), Bitmap.Config.ARGB_8888);
-							 canvas.setBitmap(bitmap);
-							 */
-							// drawC(canvas, view);
+							
 							 view.draw(canvas);
 						 }
 						 
