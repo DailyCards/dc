@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140422121125) do
+ActiveRecord::Schema.define(version: 20140507072725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "campaigns", force: true do |t|
+    t.integer  "carrier_id"
+    t.string   "name"
+    t.string   "description"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "carriers", force: true do |t|
     t.string   "name"
@@ -26,12 +36,14 @@ ActiveRecord::Schema.define(version: 20140422121125) do
 
   create_table "prizes", force: true do |t|
     t.string   "name"
-    t.integer  "carrier_id"
     t.string   "description"
     t.boolean  "valid"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "campaign_id"
   end
+
+  add_index "prizes", ["campaign_id"], name: "index_prizes_on_campaign_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "name"
