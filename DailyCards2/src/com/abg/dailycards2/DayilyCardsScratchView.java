@@ -20,6 +20,8 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.TextView;
 
 class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callback {
 	//tova e za debugvane
@@ -27,7 +29,7 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 
 	 private Context context;
 	 private Bitmap bitmap;
-	 private DayilyCardsScratchViewThread workingThread;
+	 private DayilyCardsScratchViewThread workingThreadDraw;
 	 //list sus vsichki "scratchnati" pathove
 	 List<Path> pathList = new ArrayList<Path>();
 	 //cveta na zonata, koito ste se scratchva
@@ -42,6 +44,9 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 private Path path;
 	 private float startX = 0f;
 	 private float startY = 0f;
+	 
+	 private int importantWidth = 0;
+	 private int importantHeight = 0;
 	 
 	 //ukazane dali pochva novo scratchvane za da se suzdade v List nov Path
 	 private boolean scratching = false;
@@ -107,7 +112,7 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 @Override
 	 public boolean onTouchEvent (MotionEvent event) {
 		 // moje da ne e svrurhsilo predichnoto scratchvave, sinchronizirame
-		 synchronized (workingThread.getSurfaceHolder()) {
+		 synchronized (workingThreadDraw.getSurfaceHolder()) {
 			 switch (event.getAction()) {
 			 	case MotionEvent.ACTION_DOWN:
 			 		path = new Path();
@@ -135,7 +140,7 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 			 	
 					 if (finishScratch()) {
 						 //Log.d("Finish Scrapch", "Finish Scratch");
-						 workingThread.setRunning(false);
+						 workingThreadDraw.setRunning(false);
 					 }
 					
 			 	break;
@@ -150,18 +155,28 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 
 	@Override
 	public void surfaceCreated(SurfaceHolder arg0) {
-		workingThread = new DayilyCardsScratchViewThread(getHolder(), this); 
-		workingThread.setRunning(true);
-		workingThread.start();
+		workingThreadDraw = new DayilyCardsScratchViewThread(getHolder(), this); 
+		workingThreadDraw.setRunning(true);
+		workingThreadDraw.start();
+		
+		View parent = (View)this.getParent();
+		if (parent != null) {
+			TextView textView = (TextView)parent.findViewById(R.id.scratch_text);
+			importantHeight = textView.getHeight();
+			importantWidth = textView.getWidth();
+			Log.i("TExtView width", importantWidth + " ");
+		} else {
+			Log.i("No parent", "No parent");
+		}
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder arg0) {
 		boolean retry = true;
-		workingThread.setRunning(false);
+		workingThreadDraw.setRunning(false);
         while (retry) {
             try {
-            	workingThread.join();
+            	workingThreadDraw.join();
                 retry = false;
             } catch (InterruptedException e) {
             	//one retry to close the thread
@@ -186,21 +201,51 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 
 	 private boolean finishScratch () {
 		 
-		 bitmap = getBitmap();
 		 if (bitmap != null) {
-			 final int width = bitmap.getWidth();
-		     final int height = bitmap.getHeight();
+			 
+			 int width;
+			 int height;
+			 
+			 int bitmapW = bitmap.getWidth();
+			 int bitmapH = bitmap.getHeight();
+			 
+			 Log.i("ImporatnWidth and height", importantWidth + " " + importantHeight);
+			 
+			 if (importantWidth == 0 || importantHeight == 0) {
+				 width = bitmapW;
+				 height = bitmapH;
+			 } else {
+				 width = importantWidth;
+				 height = importantHeight;
+			 }
+			 
+		     int scale = (int)scratchWidth/5;
+		     if (importantWidth != 0 && importantHeight != 0) { 
+		    	 scale = (int)scratchWidth/7;
+		     }
 		     
-		     final int scale = (int)(scratchWidth/2 + .5);
+		     int xStep = width/scale;
+		     int yStep = height/scale;
 		     
-		     final int xStep = width/scale;
-		     final int yStep = height/scale;
+		     Log.i("xStep and YStep", xStep + " " + yStep);
 		     
-		     final int xInit = scale/2;
-		     final int yInit = scale/2;
+		     int xInit = scale/2;
+		     int yInit = scale/2;
+		     if (importantWidth != 0 && importantHeight != 0) {
+		    	 xInit += bitmapW/2 - width/2;
+			     yInit += bitmapH/2 - height/2;
+		     }
 		     
-		     final int xEnd = width - scale/2;
-		     final int yEnd = height - scale/2;
+		     Log.i("xInit and yInit", xInit + " " + yInit);
+		     
+		     int xEnd = width - scale/2;
+		     int yEnd = height - scale/2;
+		     if (importantWidth != 0 && importantHeight != 0) {
+		    	 xEnd = bitmapW/2 + width/2 - scale/2;
+		    	 yEnd = bitmapH/2 + height/2 - scale/2;
+		     }
+		     
+		     Log.i("xEnd and yEnd", xEnd + " " + yEnd);
 		     
 		     int totalTransparent = 0;
 		     
@@ -214,16 +259,20 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 		     	
 		     	Log.i("number transperant", Integer.toString(totalTransparent));
 		     	Log.i("all quads", Integer.toString(xStep * yStep- 2*xStep - 2*yStep + 4));
-		     	Log.i("Procent", Float.toString(((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4 )));
-		        return ((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4) > 0.9f;
-		       //Log.d("transperant",Integer.toString(totalTransparent));
+		     	
+		     	if (importantWidth == 0 || importantHeight == 0) {
+		     		Log.i("Procent", Float.toString(((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4 )));
+		     		return ((float)totalTransparent)/(xStep * yStep - 2*xStep - 2*yStep + 4) > 0.9f;
+		     	}else{
+		     		Log.i("Procent", Float.toString(((float)totalTransparent)/(xStep * yStep)));
+		     		return ((float)totalTransparent)/(xStep * yStep) > 0.9f;
+		     	}
 		 }
 		 return false;
 	
 	 }
-	 
+	 /*
 	 private Bitmap getBitmap() {
-		// return this.getDrawingCache();
 		 return bitmap;
 		 
 	 }
@@ -231,6 +280,13 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 private void setBitmap(Bitmap bitmap) {
 		 this.bitmap = bitmap;
 	 }
+	 
+	 private int dipToPixels(Context context, float dipValue) {
+		    DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		    return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
+	}
+	 */
+	 
 	 
 	 //nishkata, koitato ste se izvika kogato Surface is created i ste vika onDraw methoda
 	 class DayilyCardsScratchViewThread extends Thread {
@@ -261,7 +317,6 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 					 canvas = surfaceHolder.lockCanvas(null);
 					 synchronized(surfaceHolder) {
 						 if (canvas != null) {
-							
 							 view.draw(canvas);
 						 }
 						 
@@ -276,9 +331,5 @@ class DayilyCardsScratchView extends SurfaceView implements SurfaceHolder.Callba
 	 }
 	 
 	 
-	private int dipToPixels(Context context, float dipValue) {
-		    DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		    return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
-	}
-	 
+	
 }
