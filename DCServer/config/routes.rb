@@ -55,5 +55,7 @@ DCServer::Application.routes.draw do
   #   end
   
   # Example resource route with sub-resources:
-    resources :carriers
+    resources :carriers do
+       resources :campaigns
+    end
 end
