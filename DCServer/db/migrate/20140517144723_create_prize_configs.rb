@@ -1,7 +1,7 @@
 class CreatePrizeConfigs < ActiveRecord::Migration
   def change
     create_table :prize_configs do |t|
-      t.reference :campaign
+      t.references :campaign
       t.string :name
       t.string :description
       t.integer :amount

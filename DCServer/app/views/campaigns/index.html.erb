@@ -12,9 +12,9 @@
   <tbody>
     <% @campaigns.each do |campaign| %>
       <tr>
-        <td><%= link_to 'Show', campaign %></td>
-        <td><%= link_to 'Edit', edit_campaign_path(campaign) %></td>
-        <td><%= link_to 'Destroy', campaign, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', carrier_campaign_path(@carrier.id, campaign)%></td>
+        <td><%= link_to 'Edit', edit_carrier_campaign_path(@carrier.id,campaign) %></td>
+        <td><%= link_to 'Destroy', [@carrier,campaign], method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>

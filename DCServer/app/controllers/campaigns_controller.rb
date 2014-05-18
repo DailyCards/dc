@@ -4,6 +4,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns
   # GET /campaigns.json
   def index
+	@carrier = Carrier.find(params[:carrier_id])
     @campaigns = Campaign.all
   end
 
@@ -14,6 +15,7 @@ class CampaignsController < ApplicationController
 
   # GET /campaigns/new
   def new
+	@carrier = Carrier.find(params[:carrier_id])
     @campaign = Campaign.new
   end
 
@@ -42,7 +44,7 @@ class CampaignsController < ApplicationController
   def update
     respond_to do |format|
       if @campaign.update(campaign_params)
-        format.html { redirect_to @campaign, notice: 'Campaign was successfully updated.' }
+        format.html { redirect_to [@carrier,@campaign], notice: 'Campaign was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -56,14 +58,15 @@ class CampaignsController < ApplicationController
   def destroy
     @campaign.destroy
     respond_to do |format|
-      format.html { redirect_to campaigns_url }
+      format.html { redirect_to carrier_campaigns_url }
       format.json { head :no_content }
     end
   end
-
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_campaign
+	  @carrier = Carrier.find(params[:carrier_id])
       @campaign = Campaign.find(params[:id])
     end
 
